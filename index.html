@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <style>
+        *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+body{
+    background-color:#F0F8FF;
+}
+.search-results{
+    max-width:1200px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    margin:0 auto;
+    margin-top:80px;
+}
+.search-result{
+    margin-bottom:60px;
+    width:30%;
+    height:100%;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    overflow:hidden;
+    border-radius:5px;
+}
+.search-result>img{
+    height:100%;
+    width:100%;
+    transition:opacity 0.2s ease-in-out;
+}
+.search-result>a{
+    text-decoration:none;
+    text-transform:capitalize;
+    color:#333;
+    font-size:20px;
+    display:block;
+    padding:10px;
+}
+.search-result:hover img{
+    opacity:0.8;
+}
+h1{
+    /* border:2px solid black; */
+    width:260px;
+    margin:50px auto;
+    font-weight:bold;
+}
+form{
+    max-width:400px;
+    margin:10px auto;
+    padding-left:10px;
+    input{
+        border-radius:5px;
+        focus:none;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+}
+input{
+    height:40px;
+    width:250px;
+    padding-left:10px;
+    margin-right:20px;
+}
+button{
+    height:40px;
+    width:100px;
+    background-color:#17B169;
+    color:white;
+    font-weight:bold;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;;
+    border-radius:5px;
+    cursor:pointer;
+    border:none;
+}
+#show-more-button{
+    border:none;
+    display:block;
+    margin:auto;
+    border-radius:5px;
+    background-color:#008cba;
+    display:none;
+}
+p{
+    width:200px;
+    margin:auto;
+    color:grey;
+}
+@media screen and (max-width:768px){
+    .search-result{
+        width:45%;
+    }
+    .search-result{
+        padding:20px;
+    }
+}
+@media screen and (max-width:440px){
+    .search-result{
+        width:100%;
+    }
+}
+    </style>
+</head>
+<body>
+    <h1>Find Any Images</h1>
+    <form action="">
+          <input type="text" id="search-input" placeholder="Search For Images"/>
+          <button id="search-button">Search</button>
+    </form>
+    <div class="search-results">
+        <div class="search-result">
+            <img src="https://images.unsplash.com/photo-1718154710424-d44de466c549?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="dirt-road-in-middle-of-dessert">
+            <a href="https://unsplash.com/photos/a-dirt-road-in-the-middle-of-a-desert-Kdv_L0dPn54" target="_blank">Dirt Road In Middle Of Dessert</a>
+        </div>
+        <div class="search-result">
+            
+            <img src="https://images.unsplash.com/photo-1718147155878-e2baab858e74?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="a-mountain-range-with-lake">
+            <a href="https://unsplash.com/photos/a-mountain-range-with-a-lake-in-the-foreground-YZn6VhOzJCI" target="_blank">A Mountain Range With Lake</a>
+        </div>
+        <div class="search-result">
+            <img src="https://images.unsplash.com/photo-1686170287433-c95faf6d3608?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="sun-set-at-beach">
+            <a href="https://unsplash.com/photos/the-sun-is-setting-over-the-water-at-the-beach-Xwx854nud4o" target="_blank">Sunset At Beach</a>
+        </div>
+    </div>
+    <button id="show-more-button">Show More</button>
+    <p>@copyright Bhairav 2024</p>
+    <script>
+        const access = "lyzvB64NZmWmkRhtRiZ-Z8qJBcLHXa8ZIHflnntKX60";
+const form1 = document.querySelector("form");
+const input1 = document.getElementById("search-input");
+const searchResults = document.querySelector(".search-results");
+const showMore = document.getElementById("show-more-button");
+
+let inputData = "";
+let page = 1;
+
+async function searchImages(){
+    inputData = input1.value;
+    const url = `https://api.unsplash.com/search/photos?page==${page}&query=${inputData}&client_id=${access}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const results = data.results;
+    if(page==1){
+        searchResults.innerHTML=""
+    }
+    results.map((result)=>{
+        const imageWrapper = document.createElement('div');
+        imageWrapper.classList.add("search-result");
+        const image = document.createElement('img');
+        image.src = result.urls.small;
+        image.alt = result.alt_description;
+        const imageLink = document.createElement('a');
+        imageLink.href = result.links.html;
+        imageLink.target = "_blank";
+        imageLink.textContent = result.alt_description;
+
+        imageLink.appendChild(image);
+        imageWrapper.appendChild(imageLink);
+        searchResults.appendChild(imageWrapper);
+    })
+    page++;
+    if(page>1){
+        showMore.style.display = "block";  
+    }
+
+}
+form1.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    page=1;
+    searchImages();
+})
+showMore.addEventListener('click',()=>{
+    searchImages();
+})
+    </script>
+</body>
+</html>
